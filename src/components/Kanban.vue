@@ -1,7 +1,12 @@
 <template>
   <div class="drag-container">
     <ul class="drag-list">
-      <li v-for="stage in stages" class="drag-column" :class="{['drag-column-' + stage]: true}" :key="stage">
+      <li
+        v-for="stage in stages"
+        class="drag-column"
+        :class="{ ['drag-column-' + stage]: true }"
+        :key="stage"
+      >
         <span class="drag-column-header">
           <slot :name="stage">
             <h2>{{ stage }}</h2>
@@ -9,7 +14,12 @@
         </span>
         <div class="drag-options"></div>
         <ul class="drag-inner-list" ref="list" :data-status="stage">
-          <li class="drag-item" v-for="block in getBlocks(stage)" :data-block-id="block.id" :key="block.id">
+          <li
+            class="drag-item"
+            v-for="block in getBlocks(stage)"
+            :data-block-id="block.id"
+            :key="block.id"
+          >
             <slot :name="block.id">
               <strong>{{ block.status }}</strong>
               <div>{{ block.id }}</div>
@@ -17,7 +27,7 @@
           </li>
         </ul>
         <div class="drag-column-footer">
-            <slot :name="`footer-${stage}`"></slot>
+          <slot :name="`footer-${stage}`"></slot>
         </div>
       </li>
     </ul>
@@ -25,58 +35,64 @@
 </template>
 
 <script>
-  import dragula from 'dragula';
+import dragula from "dragula";
 
-  export default {
-    name: 'KanbanBoard',
+export default {
+  name: "KanbanBoard",
 
-    props: {
-      stages: {},
-      blocks: {},
-    },
-    data() {
-      return {
+  props: {
+    stages: {},
+    blocks: {}
+  },
+  data() {
+    return {};
+  },
 
-      };
-    },
+  computed: {
+    localBlocks() {
+      return this.blocks;
+    }
+  },
 
-    computed: {
-      localBlocks() {
-        return this.blocks;
-      },
-    },
-
-    methods: {
-      getBlocks(status) {
-        return this.localBlocks.filter(block => block.status === status);
-      },
-    },
+  methods: {
+    getBlocks(status) {
+      return this.localBlocks.filter(block => block.status === status);
+    }
+  },
 
   updated() {
     this.drake.containers = this.$refs.list;
   },
   mounted() {
     this.drake = dragula(this.$refs.list)
-      .on('drag', (el) => {
-        el.classList.add('is-moving');
+      .on("drag", (el, source) => {
+        el.classList.add("is-moving");
+        this.$emit("dragstart", el, this.$refs.list, source);
       })
-      .on('drop', (block, list) => {
+      .on("drop", (block, list) => {
         let index = 0;
         for (index = 0; index < list.children.length; index += 1) {
-          if (list.children[index].classList.contains('is-moving')) break;
+          if (list.children[index].classList.contains("is-moving")) break;
         }
-        this.$emit('update-block', block.dataset.blockId, list.dataset.status, index);
+        this.$emit(
+          "update-block",
+          block.dataset.blockId,
+          list.dataset.status,
+          index
+        );
       })
-      .on('dragend', (el) => {
-        el.classList.remove('is-moving');
+      .on("dragend", el => {
+        el.classList.remove("is-moving");
 
         window.setTimeout(() => {
-          el.classList.add('is-moved');
+          el.classList.add("is-moved");
           window.setTimeout(() => {
-            el.classList.remove('is-moved');
+            el.classList.remove("is-moved");
           }, 600);
         }, 100);
+
+        this.$emit("dragend", el);
       });
   }
-  };
+};
 </script>
