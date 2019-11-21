@@ -1,8 +1,8 @@
 {
-  "name": "vue-kanban",
-  "version": "1.5.0",
+  "name": "vue-kanban-atlas",
+  "version": "1.5.1",
   "description": "A Vue.js project",
-  "author": "Brock <brock.reece@croud.co.uk>",
+  "author": "Aislan Maia <aislan.sousamaia@gmail.com>",
   "main": "src/plugin.js",
   "scripts": {
     "dev": "node build/dev-server.js",
