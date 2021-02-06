@@ -64,7 +64,15 @@ export default {
     this.drake.containers = this.$refs.list;
   },
   mounted() {
-    this.drake = dragula(this.$refs.list)
+    this.drake = dragula(this.$refs.list, {
+      moves: function (el, source, handle, sibling) {
+        const draggable = el.getAttribute('draggable');
+        if (draggable === 'false') {
+          return false
+        }
+        return true;
+      }
+    })
       .on("drag", (el, source) => {
         el.classList.add("is-moving");
         this.$emit("dragstart", el, this.$refs.list, source);
